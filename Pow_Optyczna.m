@@ -1,17 +1,35 @@
 clc, clearvars, close all;
 
-R = input('Podaj wartość R: ');
-K = 2;
+f = input('Podaj wartość ogniskowej: ');
+K = input('Podaj wartość stałej stożkowej: ');
+a = input("Podaj wartość apertury: ");
 
-a = input("Podaj wartość początkową x: ");
-b = input("Podaj wartość końcową x: ");
-c = input("Podaj skok x: ");
+% skok x
+c = 0.5;
 
-x = a:c:b;
+a_eq = a/2;
+
+x = (-a_eq):c:(a_eq);
 y = x;
 [X,Y] = meshgrid(x);
 
+R = 2*f;
 F = (Y.^2/ R+sqrt(R^2 - (K+1)*Y.^2));
+
+
+% Zapis powwierzchni 3D do pliku
+figure;
+surf(X,Y,F)
+
+% Zmiana koloru
+colormap(gray);
+colorbar; 
+
+title('Wykres powierzchni 3D w szarych kolorach');
+grid on;
+saveas(gcf, 'powierzchnia_3D.png');
+
+% Tworzenie pozostałych wykresów poglądowych w osobnym okienku
 figure;
 
 % Wykres powierzchni 3D
@@ -35,3 +53,5 @@ title('Profil wzdłuż osi X przy Y=0');
 subplot(2,2,4)
 plot(y, F(:, y==0))
 title('Profil wzdłuż osi Y przy X=0');
+
+
