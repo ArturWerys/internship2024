@@ -46,6 +46,7 @@ colormap(gray);
 colorbar; 
 title('Wykres powierzchni 3D w szarych kolorach');
 grid on;
+saveas(gcf, 'powierzchnia_3D.png');
 
 % Tworzenie pozostałych wykresów poglądowych w osobnym okienku
 figure;
