@@ -16,6 +16,15 @@ y = x;
 R = 2*f;
 F = (Y.^2/ R+sqrt(R^2 - (K+1)*Y.^2));
 
+% KP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% meshgrid jest generowany, ale potem wykorzystany tylko czesciowo
+% sprobujcie sobie wyswietlic X i Y i je porownac
+% figure, imagesc(X);
+% figure, imagesc(Y);
+% tutaj proponuje bardziej cos w stylu:
+%R = 2*f;
+%F = ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2)));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Zapis powwierzchni 3D do pliku
 figure;
