@@ -5,8 +5,9 @@ K = input('Podaj wartość stałej stożkowej: ');
 a = input('Podaj wartość apertury: ');
 
 t = input('Podaj wartość grubości: '); % Grubość
-pixel_size = input('Podaj rozmiar piksela: ');
-
+% t = 1;
+% pixel_size = input('Podaj rozmiar piksela: ');
+pixel_size = 0.5;
 num_coeffs = input('Podaj ile współczynników asferyczności chcesz podać: ');
 
 % Tablica współczynników
@@ -15,7 +16,7 @@ F = [];
 index = 1;
 
 % skok x
-c = 0.5 * pixel_size; % Modyfikacja skoku na podstawie rozmiaru piksela
+c = pixel_size;
 a_eq = a / 2;
 
 x = (-a_eq):c:(a_eq);
@@ -26,13 +27,13 @@ R = 2 * f;
 
 if num_coeffs == 0
     % Uwzględnienie grubości w równaniu
-    F(:,:,1) = t * (Y.^2 / R + sqrt(R^2 - (K + 1) * Y.^2)); 
+    F(:,:,1) = t * (Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2));
     F_sum = F;
 else
     for i = 1:num_coeffs
         A(index) = input(['Podaj wartość A', num2str(2*i + 2), ': ']);
         % Uwzględnienie grubości w równaniu
-        F(:,:,index) = t * (Y.^2 / R + sqrt(R^2 - (K + 1) * Y.^2)) + A(index) * (Y.^(2*i + 2));
+        F(:,:,index) = t * ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2))) + A(index) * (Y.^(2*i + 2));
         index = index + 1; 
     end
     F_sum = sum(F, 3);
