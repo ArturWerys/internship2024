@@ -4,6 +4,13 @@ f = input('Podaj wartość ogniskowej: ');
 K = input('Podaj wartość stałej stożkowej: ');
 a = input('Podaj wartość apertury: ');
 
+% KP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% zamiast podawania po kolei parametrow w konsoli lepiej jest korzystac z
+% formy funkcji z argumentami
+% te argumenty moga byc wstepnie zainicjowane za pomoca varargin (variable
+% argument input)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 t = input('Podaj wartość grubości: '); % Grubość
 % t = 1;
 % pixel_size = input('Podaj rozmiar piksela: ');
@@ -47,6 +54,14 @@ colorbar;
 title('Wykres powierzchni 3D w szarych kolorach');
 grid on;
 saveas(gcf, 'powierzchnia_3D.png');
+
+% KP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% taki plik jak powyzej może się przydac do archiwizacji
+% ale do dalszych dzialan przydatny bedzie plik png z szara mapa struktury
+% do jego generacji przydadza sie dwie funkcje:
+% <nazwa zmiennej> = mat2gray(F_sum)
+% imwrite("<nazwa zmiennej>,<nazwa pliku z rozszerzeniem>")
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Tworzenie pozostałych wykresów poglądowych w osobnym okienku
 figure;
