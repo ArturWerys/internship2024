@@ -1,7 +1,9 @@
 # FOTOLITOGRAFICZNE MASKI AMPLITUDOWE – O CO CHODZI?
 
 Proces polega na zaprojektowaniu takiej maski fotolitograficznej, która jednorodny rozkład intensywności wiązki o długości fali 365 nm przekształci na rozkład zmienny i wielostopniowy. Tą zmodulowaną przestrzennie energią zostanie naświetlona cienka warstwa światłoczułego polimeru zwanego fotorezystem, co spowoduje lokalne rozbijanie wiązań międzycząsteczkowych. Cząstki o osłabionych wiązaniach zostaną następnie wypłukane rozpuszczalnikiem w procesie wywołania, a pozostała warstwa polimeru będzie miała dwu-i-półwymiarowy kształt. Może ona stanowić finalny element funkcjonalny, albo zostać użyta jako dawca kształtu do innych procesów jak trawienie czy galwanizacja.
+
 Dobra wiadomość: każdy z poniższych kroków (może poza 2) został w jakimś stopniu ruszony i maski działają.
+
 Zła wiadomość: każdy z tych kroków wymaga ogromnej ilości pracy optymalizacyjnej. Jest to zadanie zdecydowanie przerastające zarówno czas, jak i zakres praktyk, ale ważne jest to, czego się nauczycie podczas tej pracy. Każdym krokiem możecie się w miarę swoich zainteresowań zająć, jeżeli będziecie mieli na to ochotę.
 
 ## ELEMENTY PROCESU WYTWARZANIA FOTOLITOGRAFICZNEJ MASKI AMPLITUDOWEJ:
