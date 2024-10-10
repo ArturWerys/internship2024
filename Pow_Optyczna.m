@@ -3,22 +3,16 @@ clc; clearvars; close all;
 f = input('Podaj wartość ogniskowej: ');
 K = input('Podaj wartość stałej stożkowej: ');
 a = input('Podaj wartość apertury: ');
+t = input('Podaj wartość grubości: '); 
 
-% KP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% zamiast podawania po kolei parametrow w konsoli lepiej jest korzystac z
-% formy funkcji z argumentami
-% te argumenty moga byc wstepnie zainicjowane za pomoca varargin (variable
-% argument input)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tablica współczynników asferyczności
+coeffs_array = input('Podaj współczynniki asferyczności oddzielone spacjami w postaci [x1 x2 ....]: ');
+num_coeffs = length(coeffs_array);
 
-t = input('Podaj wartość grubości: '); % Grubość
-% t = 1;
 % pixel_size = input('Podaj rozmiar piksela: ');
 pixel_size = 0.5;
-num_coeffs = input('Podaj ile współczynników asferyczności chcesz podać: ');
 
-% Tablica współczynników
-A = [];
+% Pomocniczna tablica na funkcję
 F = [];
 index = 1;
 
@@ -33,37 +27,22 @@ y = x;
 R = 2 * f;
 
 if num_coeffs == 0
-    % Uwzględnienie grubości w równaniu
     F(:,:,1) = t * (Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2));
     F_sum = F;
 else
     for i = 1:num_coeffs
-        A(index) = input(['Podaj wartość A', num2str(2*i + 2), ': ']);
-        % Uwzględnienie grubości w równaniu
-        F(:,:,index) = t * ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2))) + A(index) * (Y.^(2*i + 2));
+        F(:,:,i) = t * ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2))) + coeffs_array(i) * (Y.^(2*i + 2));
         index = index + 1; 
     end
     F_sum = sum(F, 3);
 end
 
-% Zapis powierzchni 3D do pliku
-figure;
-surf(X, Y, F_sum)
-colormap(gray);
-colorbar; 
-title('Wykres powierzchni 3D w szarych kolorach');
-grid on;
-saveas(gcf, 'powierzchnia_3D.png');
+% Zapis szarej mapy struktury
+wykres = mat2gray(F_sum);
+wykres = imresize(wykres, [500,500]);
+imwrite(wykres, 'powierzchnia_3D.png');
 
-% KP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% taki plik jak powyzej może się przydac do archiwizacji
-% ale do dalszych dzialan przydatny bedzie plik png z szara mapa struktury
-% do jego generacji przydadza sie dwie funkcje:
-% <nazwa zmiennej> = mat2gray(F_sum)
-% imwrite("<nazwa zmiennej>,<nazwa pliku z rozszerzeniem>")
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Tworzenie pozostałych wykresów poglądowych w osobnym okienku
+% Tworzenie pozostałych wykresów poglądowych
 figure;
 
 % Wykres powierzchni 3D
