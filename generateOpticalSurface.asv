@@ -1,17 +1,23 @@
-% To do :
-%   - zamienić program na funkcję zwracającą obraz
-%   - problem grubości
-%   - zerowanie obwódki
-%   - poprawa rozmiaru pixela
-%   - zamienić program na język angielski 
-
-function optical_surface = generateOpticalSurface(f, K, a, t, px_s, coeffs_array)
-    %
-    %
+function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array)
     
-    
-
+    % To do :
+    %   - zamienić program na funkcję zwracającą obraz
+    %   - problem grubości
+    %   - zerowanie obwódki
+    %   - poprawa rozmiaru pixela
+    %   - zamienić program na język angielski 
     %
+    % INPUTS:
+    %   f               - focal length
+    %   K               - cone constant
+    %   a               - numerical aperture
+    %   d               - thickness
+    %   px_s            - pixel size
+    %   coeffs_array    - asphericity coefficient table
+    %
+    %
+    % OUTPUT:
+    %   optical_surface - A grayscale image of the optical surface structure.
 
 
 
@@ -24,20 +30,26 @@ function optical_surface = generateOpticalSurface(f, K, a, t, px_s, coeffs_array
     
     % skok x
     c = px_s;
-    a_eq = a / 2;
     
-    x = (-a_eq):c:(a_eq);
+    % ???????
+    if mod(a, 2) ~= 0
+        x = linspace((-a/2+ 1/2),(a/2 + 1/2), ;
+    else
+        x = (a/2):c:(a/2);
+    end
+    % ????
+
     y = x;
     
     [X,Y] = meshgrid(x);
     R = 2 * f;
     
     if num_coeffs == 0
-        F(:,:,1) = t * (Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2));
+        F(:,:,1) = d * (Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2));
         F_sum = F;
     else
         for i = 1:num_coeffs
-            F(:,:,i) = t * ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2))) + coeffs_array(i) * (Y.^(2*i + 2));
+            F(:,:,i) = d * ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2))) + coeffs_array(i) * (Y.^(2*i + 2));
             index = index + 1; 
         end
         F_sum = sum(F, 3);

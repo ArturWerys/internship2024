@@ -1,5 +1,5 @@
 function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array)
-    %
+    
     % To do :
     %   - zamienić program na funkcję zwracającą obraz
     %   - problem grubości
@@ -28,11 +28,12 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array
     F = [];
     index = 1;
     
-    % skok x
-    c = px_s;
-    a_eq = a / 2;
-    
-    x = (-a_eq):c:(a_eq);
+    if mod(a, 2) ~= 0
+        x = linspace((-(a-1)/2),((a-1)/2), a);
+    else
+        x = (-a/2):px_s:(a/2);
+    end
+
     y = x;
     
     [X,Y] = meshgrid(x);
