@@ -1,21 +1,15 @@
 function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array)
     
     % To do :
-    %   - zamienić program na funkcję zwracającą obraz
     %   - problem grubości
-    %   - zerowanie obwódki
     %   - poprawa rozmiaru pixela
-    %   - zamienić program na język angielski 
-    %
     % INPUTS:
     %   f               - focal length
     %   K               - cone constant
     %   a               - numerical aperture
     %   d               - thickness
     %   px_s            - pixel size
-    %   coeffs_array    - asphericity coefficient table
-    %
-    %
+    %   coeffs_array    - asphericity coefficient table []
     % OUTPUT:
     %   optical_surface - A grayscale image of the optical surface structure.
 
@@ -28,33 +22,37 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array
     F = [];
     index = 1;
     
-    % skok x
-    c = px_s;
-    
-    % ???????
-    if mod(a, 2) ~= 0
-        x = linspace((-a/2+ 1/2),(a/2 + 1/2), ;
+    if mod(a, 2)
+        x = linspace((-(a-1)/2),((a-1)/2), a);
     else
-        x = (a/2):c:(a/2);
+        x = (-a/2):px_s:(a/2);
     end
-    % ????
 
     y = x;
     
-    [X,Y] = meshgrid(x);
+    [X,Y] = meshgrid(x,y);
     R = 2 * f;
     
     if num_coeffs == 0
         F(:,:,1) = d * (Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2));
         F_sum = F;
+                    
     else
         for i = 1:num_coeffs
             F(:,:,i) = d * ((Y.^2+X.^2)/ R+sqrt(R^2 - (K+1).*(Y.^2+X.^2))) + coeffs_array(i) * (Y.^(2*i + 2));
             index = index + 1; 
         end
+
         F_sum = sum(F, 3);
     end
+
+    if d > max(max(F_sum))
+       d = max(max(F_sum));
+    end
     
+    % Zerowanie obwódki
+    F_sum = F_sum - min(min(F_sum));
+
     % Zapis szarej mapy struktury
     wykres = mat2gray(F_sum);
     wykres = imresize(wykres, [500,500]);
