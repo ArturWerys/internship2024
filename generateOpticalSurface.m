@@ -1,4 +1,4 @@
-function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array)
+function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     
     % INPUTS:
     %   f               - focal length
@@ -11,9 +11,19 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, coeffs_array
     %   optical_surface - A grayscale image of the optical surface structure.
 
     % TO DO:
-    % - problem grubość=ci?
+    % - problem grubośćci?
 
     % Call the function to calculate the optical surface
+    
+    % if nargin < 6
+    %     coeffs_array = 0;
+    % end
+
+    if isempty(varargin)
+        coeffs_array = 0; 
+    else
+        coeffs_array = cell2mat(varargin); 
+    end
     [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, coeffs_array);
 
     % Grey structure map
@@ -51,7 +61,7 @@ end
 
 function [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, coeffs_array)
     % Function to calculate the optical surface
-    
+
     % Determine the number of coefficients
     num_coeffs = length(coeffs_array);
   
