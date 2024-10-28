@@ -3,7 +3,7 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     % INPUTS:
     %   f               - focal length
     %   K               - cone constant
-    %   a               - numerical aperture
+    %   a               - aperture
     %   d               - thickness
     %   px_s            - pixel size
     %   coeffs_array    - asphericity coefficient table []
@@ -25,10 +25,10 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
         coeffs_array = cell2mat(varargin); 
     end
     [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, coeffs_array);
-
+   
     % Grey structure map
     surface = mat2gray(F_sum);
-    surface = imresize(surface, [500,500]);
+    %surface = imresize(surface, [500,500]);
     imwrite(surface, 'surface_3D.png');
     
     % Illustrative charts
@@ -36,7 +36,7 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     
     % 3D surface plot
     subplot(2,2,1)
-    surf(X,Y,F_sum)
+    surf(X,Y,F_sum); shading flat
     title('3D Surface Plot');
     grid on;
     
@@ -63,39 +63,42 @@ function [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, coeffs_
     % Function to calculate the optical surface
 
     % Determine the number of coefficients
-    num_coeffs = length(coeffs_array);
-  
+    num_coeffs = length(coeffs_array)
+    coeffs_array
     % Generate coordinate arrays based on the numerical aperture
-    if mod(a, 2)
-        x = linspace((-(a-1)/2), ((a-1)/2), a);
-    else
-        x = (-a/2):px_s:(a/2);
-    end
+
+    x = (-a/2+0.5):px_s:(a/2-0.5);
+    length(x)
 
     y = x;
     [X, Y] = meshgrid(x, y);
-
+    length(X)
+    length(Y)
     R = 2 * f;
     
     F = []; 
     
     % Calculations
-    if num_coeffs == 0
-        F(:,:,1) = d * (Y.^2 + X.^2) / R + sqrt(R^2 - (K + 1) .* (Y.^2 + X.^2));
-        F_sum = F;
+    if num_coeffs == 1
+        num_coeffs
+        %F(:,:,1) = (Y.^2 + X.^2) / R + sqrt(R^2 - (K + 1) .* (Y.^2 + X.^2));
+        F_sum = (Y.^2 + X.^2) ./ R + sqrt(R^2 - (K + 1) .* (Y.^2 + X.^2));
+        %F_sum = F;
     else
         for i = 1:num_coeffs
-            F(:,:,i) = d * ((Y.^2 + X.^2) / R + sqrt(R^2 - (K + 1) .* (Y.^2 + X.^2))) + coeffs_array(i) * (Y.^(2*i + 2));
+            F(:,:,i) = ((Y.^2 + X.^2) / R + sqrt(R^2 - (K + 1) .* (Y.^2 + X.^2))) + coeffs_array(i) * (Y.^(2*i + 2));
         end
         F_sum = sum(F, 3);
     end
 
-    % Check if user doesn't enter d greater than the actual value
-    if d > max(max(F_sum))
-        d = max(max(F_sum));
-        F_sum = calculateOpticalSurface(f, K, d, a, px_s, coeffs_array);
-    end
+    % % Check if user doesn't enter d greater than the actual value
+    % if d > max(max(F_sum))
+    %     d = max(max(F_sum));
+    %     F_sum = calculateOpticalSurface(f, K, d, a, px_s, coeffs_array);
+    % end
 
     % Normalize the surface
-    F_sum = F_sum - min(min(F_sum));
+    if d > max(max(F_sum))
+        F_sum = F_sum - max(max(F_sum)) + d;
+    end
 end
