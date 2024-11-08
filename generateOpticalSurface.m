@@ -45,18 +45,15 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, shape, varar
     title('Contour Plot');
     grid on;
     
+    % Profile along the X axis (Y=0)
+    subplot(2,2,3)
+    plot(x, F_sum(x==0, :))
+    title('Profile along X-axis (Y=0)');
 
-    % Do poprawy
-
-    % % Profile along the X axis (Y=0)
-    % subplot(2,2,3)
-    % plot(x, F_sum(x==0, :))
-    % title('Profile along X-axis (Y=0)');
-    % 
-    % % Profile along the Y axis (X=0)
-    % subplot(2,2,4)
-    % plot(y, F_sum(:, y==0))
-    % title('Profile along Y-axis (X=0)');
+    % Profile along the Y axis (X=0)
+    subplot(2,2,4)
+    plot(y, F_sum(:, y==0))
+    title('Profile along Y-axis (X=0)');
 
     optical_surface = surface;
 
