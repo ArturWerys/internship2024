@@ -48,7 +48,7 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, shape, varar
     % Profile along the X axis (Y=0)
     subplot(2,2,3)
     plot(x, F_sum(x==0, :))
-    title('Profile along X-axis (Y=0)');
+    title('Profile along X-axis (Y=0)'); % to nie zadziala dla parzystych matryc
 
     % Profile along the Y axis (X=0)
     subplot(2,2,4)
@@ -98,7 +98,7 @@ function [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, shape, 
    end
 
    % Zerowanie obwodki 
-   if shape == 0
+   if shape == 0 % to nie jest zerowanie obwodki
        F_sum = F_sum - min(min(F_sum));
    end
 end
