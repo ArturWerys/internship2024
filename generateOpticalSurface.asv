@@ -45,16 +45,16 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, shape, varar
     grid on;
     
     % Profile along the X axis (Y=0)
-    index = abs(min(x));
-    subplot(2,2,3)
-    plot(x, F_sum(index, :))
-    title('Profile along X-axis (Y=0)'); 
 
-    
+    index = find(F_sum())
+
+    subplot(2,2,3)
+    plot(x, F_sum(x==0, :))
+    title('Profile along X-axis (Y=0)'); % to nie zadziala dla parzystych matryc
+
     % Profile along the Y axis (X=0)
-    index = abs(min(y));
     subplot(2,2,4)
-    plot(y, F_sum(:,index))
+    plot(y, F_sum(:, y==0))
     title('Profile along Y-axis (X=0)');
 
     optical_surface = surface;
