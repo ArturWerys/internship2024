@@ -12,8 +12,7 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, shape, varar
     %   optical_surface - A grayscale image of the optical surface structure.
 
     % TO DO:
-    % - problem grubośći
-    % - problem kształtu pixela?
+    % - problem kształtu obówdki - zerowanie lub nie
     % - rozmieszczenie w zależności od parzystego/ nieparzystego a?
 
     % Call the function to calculate the optical surface
