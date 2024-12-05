@@ -73,7 +73,6 @@ function [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, coeffs_
     length(x)
 
     y = x;
-
     [X, Y] = meshgrid(x, y);
     length(X)
     length(Y)
@@ -100,8 +99,9 @@ function [F_sum, x, y, X, Y] = calculateOpticalSurface(f, K, d, a, px_s, coeffs_
         F_sum = F_sum - max(max(F_sum)) + d;
    end
 
-   % Zerowanie obwodki - z równania okręgu X, Y, A
-   % mask = (X.^2 + Y.^2 > (a/2)^2);
-   % F_sum(mask) = d;
+   % Zerowanie obwodki - z równania okręgu, sprawdzanie warunku z R, Y, A
+mask = (X.^2 + Y.^2 > (a/2)^2); % Maska logiczna dla punktów poza okręgiem
+F_sum(mask) = 0; % Zerowanie wartości w F_sum poza obwodem
+disp('Zerowanie obwodki zakończone');
 
 end
