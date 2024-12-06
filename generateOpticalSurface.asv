@@ -67,8 +67,7 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
 % what we need from this block is to:
 % - separate two cases - positive and negative focal length
 % - decide when to include thickness for each case
-% - decide which pixel is the source of height for the non-zero mask (edge
-% of the circle)
+% - decide which pixel is the source of height for the non-zero mask
 % - end up with circle of thickness equal or higher than d
 % - end up with zeros around for negative f or max around for positive f
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,8 +107,6 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     title('Contour Plot');
     grid on;
     
-    % now generates correct values for different pixels and all cases
-
     % Profile along the X axis (Y=0)
     subplot(2,2,3)
     plot(F_sum(round(len/2),:));
