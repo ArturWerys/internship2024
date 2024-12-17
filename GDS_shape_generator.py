@@ -1,22 +1,42 @@
 import gdspy
 import numpy as np
+from PIL import Image
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
-# Parametry
-size_of_cell = 0.5  
-layer_num = 1
-radius = 2
 
-lib = gdspy.GdsLibrary()
+def draw_circle():
+    # Parametry
+    size_of_cell = 0.5
+    layer_num = 1
+    radius = 2
 
-unitCell = lib.new_cell('CELL')
+    lib = gdspy.GdsLibrary()
 
-angles = np.linspace(0, 2 * np.pi, 10, endpoint=False)[1:]  # Pomijamy środek (kąt 0)
-for angle in angles:
-    c_x = radius * np.cos(angle)
-    c_y = radius * np.sin(angle)
-    unitCell.add(gdspy.Rectangle((c_x - 1, c_y - 1), (c_x + 1, c_y + 1), layer=layer_num))
+    unitCell = lib.new_cell('CELL')
 
-grid = lib.new_cell("GRID")
-grid.add(gdspy.CellReference(unitCell, origin=(0, 0), magnification=size_of_cell))
+    angles = np.linspace(0, 2 * np.pi, 15, endpoint=False)[1:]
+    for angle in angles:
+        c_x = radius * np.cos(angle)
+        c_y = radius * np.sin(angle)
+        unitCell.add(gdspy.Rectangle((c_x - 1, c_y - 1), (c_x + 1, c_y + 1), layer=layer_num))
 
-lib.write_gds("image.gds")
+    grid = lib.new_cell("GRID")
+    grid.add(gdspy.CellReference(unitCell, origin=(0, 0), magnification=size_of_cell))
+
+    lib.write_gds("image.gds")
+
+Tk().withdraw()
+
+filename = askopenfilename(title="Wybierz plik obrazu", filetypes=[("Image files", "*.png;*.jpg;*.jpeg;*.bmp;*.gif")])
+
+if filename:
+    image = Image.open(filename)
+    print(f"Obraz wczytany: {filename}")
+    draw_circle()
+
+else:
+    print("Nie wybrano pliku.")
+
+
+
