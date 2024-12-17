@@ -33,7 +33,8 @@ if filepath:
         for j in range(y):
             pixel = image.getpixel((i, j))
             print(f"Wartość piksela: {pixel}")
-            draw_circle(lib, main_cell, i, j)
+            if pixel < 255:
+                draw_circle(lib, main_cell, i, j)
 
 else:
     print("Nie wybrano pliku.")
