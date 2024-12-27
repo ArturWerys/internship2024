@@ -34,9 +34,9 @@ if filepath:
     for i in range(x):
         for j in range(y):
 
-            pixel = image.getpixel((i, j))
-            pixels.append(pixel)
-
+            pixel = image.getpixel((i, j)) # wydaje mi sie, ze numpy ma funkcje, ktora z obiektu Image robi array
+            pixels.append(pixel)           # wtedy nie musimy uzywac getpixel
+            print(max(pixels))             # dodalem ten print, bo wtedy widac, ze nie do konca jest dobrze
             print(f"Wartość piksela: {pixel}")
 
             r_max = int(np.sqrt(max(pixels) / np.pi))
