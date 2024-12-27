@@ -21,6 +21,7 @@ filepath = askopenfilename(title="Wybierz plik obrazu", filetypes=[("Image files
 if filepath:
 
     image = Image.open(filepath)
+
     lib = gdspy.GdsLibrary()
     cell_name = lib.new_cell(f"Cell_{int(time.time())}")  # Dodanie znacznika czasu
 
@@ -28,19 +29,27 @@ if filepath:
 
     x, y = image.size
 
-    pixels = []
     radii = []
 
-    for i in range(x):
-        for j in range(y):
+    np_data = np.asarray(image)
+    print(np_data)
 
-            pixel = image.getpixel((i, j)) # wydaje mi sie, ze numpy ma funkcje, ktora z obiektu Image robi array
-            pixels.append(pixel)           # wtedy nie musimy uzywac getpixel
-            print(max(pixels))             # dodalem ten print, bo wtedy widac, ze nie do konca jest dobrze
-            print(f"Wartość piksela: {pixel}")
+    for i in range(len(np_data)):
+        for j in range(len(np_data[i])):
 
-            r_max = int(np.sqrt(max(pixels) / np.pi))
-            r_min = int(np.sqrt(min(pixels) / np.pi))
+            pixel = np_data[i][j]
+            print("Wartość iterowanego pixela: ", pixel)
+
+            max_pixel = np.amax(np_data)
+            min_pixel = np.amin(np_data)
+
+            print(max_pixel)
+            print(min_pixel)
+
+            print("--------------")
+
+            r_max = int(np.sqrt(max_pixel / np.pi))
+            r_min = int(np.sqrt(min_pixel / np.pi))
 
             if r_min < 1:
                 r_min = 1
@@ -49,9 +58,6 @@ if filepath:
             radii.append(r_max)
 
             radius_range = r_max - r_min
-
-            print(r_min)
-            print(r_max)
 
             size_of_cell = r_max
 
