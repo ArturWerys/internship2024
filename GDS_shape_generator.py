@@ -118,8 +118,6 @@ if filepath:
 
                 area = area_min + (pixel / 255) * (area_max - area_min)
 
-                draw_square(lib, cell_name, size_of_cell=1, layer_number=1, )
-
                 draw_square(lib, cell_name, size_of_cell=1, layer_number=1, x_px=1, y_px=1)
 
     else:
