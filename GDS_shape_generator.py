@@ -14,15 +14,13 @@ def draw_circle(library, cell_name, radius=1, size_of_cell=2, layer_number=1, x_
     library.write_gds("image.gds")
 
 
-def draw_square(library, cell, pixel_value=2, size_of_cell = 2, layer_number=1, x_px=0, y_px=0):
-    # Calculate the square's side length
-    side = np.sqrt(pixel_value)
+def draw_square(library, cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
 
     # Determine the coordinates of the square's corners
-    x1 = x_px * size_of_cell - side / 2
-    y1 = y_px * size_of_cell - side / 2
-    x2 = x_px * size_of_cell + side / 2
-    y2 = y_px * size_of_cell + side / 2
+    x1 = x_px * size_of_cell - side_length / 2
+    y1 = y_px * size_of_cell - side_length / 2
+    x2 = x_px * size_of_cell + side_length / 2
+    y2 = y_px * size_of_cell + side_length / 2
 
     # Create the square
     square = gdspy.Rectangle((x1, y1), (x2, y2), layer=layer_number)
@@ -98,29 +96,28 @@ if filepath:
 
         print("square")
 
+        max_pixel = np.amax(np_data)
+        min_pixel = np.amin(np_data)
+
+        s_of_c = int(np.sqrt(max_pixel))
+
+        # Define the range of side lengths based on pixel intensity
+        side_min = np.sqrt(min_pixel)
+        side_max = np.sqrt(max_pixel)
+
+        if side_min < 1:
+            side_min = 1
+
         for i in range(len(np_data)):
             for j in range(len(np_data[i])):
 
                 pixel = np_data[i][j]
 
-                pixels_array = []
-
-                pixels_array.append(pixel)
                 print("Wartość iterowanego pixela: ", pixel)
 
-                max_pixel = np.amax(np_data)
-                min_pixel = np.amin(np_data)
+                side_length = side_min + (pixel / 255) * (side_max - side_min)
 
-                area_min = (max_pixel / 255) * (max_pixel / 255)
-                area_max = (min_pixel / 255) * (min_pixel / 255)
-
-                area = area_min + (pixel / 255) * (area_max - area_min)
-
-                soc = int(np.sqrt(max_pixel))
-
-                for p in pixels_array:
-
-                    draw_square(lib, cell_name, pixel_value=p, size_of_cell=soc, layer_number=1, x_px=1, y_px=1)
+                draw_square(lib, cell_name, side_length, size_of_cell=s_of_c, layer_number=1, x_px=i, y_px=j)
 
     else:
         print("Invalid number")
