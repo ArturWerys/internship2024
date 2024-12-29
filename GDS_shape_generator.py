@@ -14,22 +14,22 @@ def draw_circle(library, cell_name, radius=1, size_of_cell=2, layer_number=1, x_
     library.write_gds("image.gds")
 
 
-def draw_square(library, cell, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
-    # Wyznaczenie współrzędnych rogu kwadratu
-    x1 = x_px * size_of_cell
-    y1 = y_px * size_of_cell
+def draw_square(library, cell, pixel_value=2, size_of_cell = 2, layer_number=1, x_px=0, y_px=0):
+    # Calculate the square's side length
+    side = np.sqrt(pixel_value)
 
-    # Długość boku kwadratu
-    x2 = x1 + size_of_cell
-    y2 = y1 + size_of_cell
+    # Determine the coordinates of the square's corners
+    x1 = x_px * size_of_cell - side / 2
+    y1 = y_px * size_of_cell - side / 2
+    x2 = x_px * size_of_cell + side / 2
+    y2 = y_px * size_of_cell + side / 2
 
-    # Tworzenie kwadratu (Rectangle od (x1, y1) do (x2, y2))
+    # Create the square
     square = gdspy.Rectangle((x1, y1), (x2, y2), layer=layer_number)
 
-    # Dodanie kwadratu do komórki
+    # Add the square to the cell
     cell.add(square)
 
-    # Zapis biblioteki do pliku GDS
     library.write_gds("image.gds")
 
 
@@ -56,8 +56,6 @@ if filepath:
     if question == 0:
         print("circle")
 
-        radii = []
-
         for i in range(len(np_data)):
             for j in range(len(np_data[i])):
 
@@ -78,9 +76,6 @@ if filepath:
                 if r_min < 1:
                     r_min = 1
 
-                radii.append(r_min)
-                radii.append(r_max)
-
                 radius_range = r_max - r_min
 
                 size_of_cell = r_max
@@ -91,7 +86,6 @@ if filepath:
                 if pixel > 0:
                     area = area_min + (pixel / 255) * (area_max - area_min)
                     r_new = np.sqrt(area / np.pi)
-                    radii.append(r_new)
                 else:
                     r_new = 0
 
@@ -108,17 +102,25 @@ if filepath:
             for j in range(len(np_data[i])):
 
                 pixel = np_data[i][j]
+
+                pixels_array = []
+
+                pixels_array.append(pixel)
                 print("Wartość iterowanego pixela: ", pixel)
 
                 max_pixel = np.amax(np_data)
                 min_pixel = np.amin(np_data)
 
-                area_min = max_pixel * max_pixel
-                area_max = min_pixel * min_pixel
+                area_min = (max_pixel / 255) * (max_pixel / 255)
+                area_max = (min_pixel / 255) * (min_pixel / 255)
 
                 area = area_min + (pixel / 255) * (area_max - area_min)
 
-                draw_square(lib, cell_name, size_of_cell=1, layer_number=1, x_px=1, y_px=1)
+                soc = int(np.sqrt(max_pixel))
+
+                for p in pixels_array:
+
+                    draw_square(lib, cell_name, pixel_value=p, size_of_cell=soc, layer_number=1, x_px=1, y_px=1)
 
     else:
         print("Invalid number")
