@@ -16,16 +16,13 @@ def draw_circle(library, cell_name, radius=1, size_of_cell=2, layer_number=1, x_
 
 def draw_square(library, cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
 
-    # Determine the coordinates of the square's corners
     x1 = x_px * size_of_cell - side_length / 2
     y1 = y_px * size_of_cell - side_length / 2
     x2 = x_px * size_of_cell + side_length / 2
     y2 = y_px * size_of_cell + side_length / 2
 
-    # Create the square
     square = gdspy.Rectangle((x1, y1), (x2, y2), layer=layer_number)
 
-    # Add the square to the cell
     cell.add(square)
 
     library.write_gds("image.gds")
@@ -40,7 +37,7 @@ if filepath:
     image = Image.open(filepath)
 
     lib = gdspy.GdsLibrary()
-    cell_name = lib.new_cell(f"Cell_{int(time.time())}")  # Dodanie znacznika czasu
+    cell_name = lib.new_cell(f"Cell_{int(time.time())}")
 
     print(f"Obraz wczytany: {filepath}")
 
@@ -92,8 +89,6 @@ if filepath:
 
     elif question == 1:
 
-        # Do skończenia, to nie działa jak powinno, wersja niekompletna
-
         print("square")
 
         max_pixel = np.amax(np_data)
@@ -101,7 +96,6 @@ if filepath:
 
         s_of_c = int(np.sqrt(max_pixel))
 
-        # Define the range of side lengths based on pixel intensity
         side_min = np.sqrt(min_pixel)
         side_max = np.sqrt(max_pixel)
 
