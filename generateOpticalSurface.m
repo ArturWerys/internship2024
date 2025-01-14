@@ -90,8 +90,14 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     end
 
     % Grey structure map
-    optical_surface = mat2gray(F_sum);
+    F_sum = F_sum - min(min(F_sum));
+    optical_surface = F_sum / max(max(F_sum));
+    %optical_surface = mat2gray(F_sum);
+    max(max(optical_surface))
+    min(min(optical_surface))
     imwrite(optical_surface, 'surface_3D.png');
+    optical_surface(optical_surface<1/255) = 0; % needed to get proper zero
+    imwrite(optical_surface, 'surface_3D2.png');
     
     % Illustrative charts
     figure;
