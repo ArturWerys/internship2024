@@ -4,7 +4,7 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import numpy as np
 import time
-from tqdm import tqdm  # Library for progress bar
+from tqdm import tqdm
 
 
 def draw_circle(cell, radius=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
@@ -36,57 +36,69 @@ def process_image(filepath):
     print(f"Loaded image: {filepath}")
     np_data = np.asarray(image)
 
-    question = int(input("Circle / Square [ 0 / 1 ]: "))
     size_of_cell = int(input("Size of cell: "))
+    r_min = int(input("R min value: "))
+    r_max = int(input("R max value: "))
 
-    max_pixel = np.amax(np_data)
-    min_pixel = np.amin(np_data)
+    question = int(input("Circle / Square [ 0 / 1 ]: "))
+    question2 = int(input("Zakres 0-254 / 1-255 [0/1]: "))
 
-    total_pixels = len(np_data) * len(np_data[0])  # Total number of pixels for progress bar
+    total_pixels = len(np_data) * len(np_data[0])
 
     if question == 0:  # Circle
-        r_min = int(input("R min value: "))
-        r_max = int(input("R max value: "))
-
-        if r_max == 0:
-            r_max = 800
-        if r_min == 0:
-            r_min = 300
 
         with tqdm(total=total_pixels, desc="Drawing Circles", ncols=80) as pbar:
             for i in range(len(np_data)):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
-                    if r_min < 1:
-                        r_min = 1
 
                     area_min = np.pi * (r_min ** 2)
                     area_max = np.pi * (r_max ** 2)
 
-                    if pixel > 0:
-                        area = area_min + (pixel / 255) * (area_max - area_min)
-                        r_new = np.sqrt(area / np.pi)
-                    else:
-                        r_new = 0
+                    if question2 == 0:
+                        if pixel >= 0:
+                            area = area_min + (pixel-1 / 254) * (area_max - area_min)
+                            r_new = np.sqrt(area / np.pi)
+                        else:
+                            r_new = 0
 
-                    if r_new > 0:
-                        draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
+                        if r_new > 0:
+                            draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
+                    else:
+                        if pixel > 1:
+                            area = area_min + (pixel/ 255) * (area_max - area_min)
+                            r_new = np.sqrt(area / np.pi)
+                        else:
+                            r_new = 0
+
+                        if r_new > 0:
+                            draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
 
                     pbar.update(1)
 
     elif question == 1:  # Square
+
         print("Drawing squares...")
-        side_min = np.sqrt(min_pixel)
-        side_max = np.sqrt(max_pixel)
+        side_min = r_min
+        side_max = r_max
+
         if side_min < 1:
             side_min = 1
 
         with tqdm(total=total_pixels, desc="Drawing Squares", ncols=80) as pbar:
             for i in range(len(np_data)):
                 for j in range(len(np_data[i])):
-                    pixel = np_data[i][j]
-                    side_length = side_min + (pixel / 255) * (side_max - side_min)
-                    draw_square(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+
+                    if question2 == 0:
+                        pixel = np_data[i][j]
+                        side_length = side_min + (pixel-1 / 254) * (side_max - side_min)
+                        draw_square(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+
+                    elif question2 == 1:
+
+                        pixel = np_data[i][j]
+                        side_length = side_min + (pixel / 255) * (side_max - side_min)
+                        draw_square(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
 
                     pbar.update(1)
 
