@@ -45,7 +45,6 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     length(X)
     length(Y)
     R = 2 * f;
-    
     F = []; 
     
     % Calculations
@@ -85,20 +84,14 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
             if d > max(max(F_sum))
                 F_sum = F_sum - max(max(F_sum)) + d;
             end
-            F_sum(X.^2 + Y.^2 > (a/2)^2) = 0;
+            F_sum(X.^2 + Y.^2 > X(len,len)^2 + Y(round(len/2),round(len/2))^2) = -(max(max(F_sum)) - min(min(F_sum)))/256;
         end
     end
 
     % Grey structure map
-    F_sum = F_sum - min(min(F_sum));
-    optical_surface = F_sum / max(max(F_sum));
-    %optical_surface = mat2gray(F_sum);
-    max(max(optical_surface))
-    min(min(optical_surface))
+    optical_surface = mat2gray(F_sum);
     imwrite(optical_surface, 'surface_3D.png');
-    optical_surface(optical_surface<1/255) = 0; % needed to get proper zero
-    imwrite(optical_surface, 'surface_3D2.png');
-    
+   
     % Illustrative charts
     figure;
     
