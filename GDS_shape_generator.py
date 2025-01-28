@@ -26,6 +26,46 @@ def draw_square(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y_p
     cell.add(square)
 
 
+def draw_pentagon(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
+    """Draws a pentagon in the given cell."""
+    center_x = x_px * size_of_cell
+    center_y = -y_px * size_of_cell
+    angle = 2 * np.pi / 5  #
+    points = [
+        (center_x + side_length * np.cos(i * angle), center_y + side_length * np.sin(i * angle))
+        for i in range(5)
+    ]
+    pentagon = gdspy.Polygon(points, layer=layer_number)
+    cell.add(pentagon)
+
+
+def draw_hexagon(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
+    """Draws a hexagon in the given cell."""
+    center_x = x_px * size_of_cell
+    center_y = -y_px * size_of_cell
+    angle = np.pi / 3
+    points = [
+        (center_x + side_length * np.cos(i * angle), center_y + side_length * np.sin(i * angle))
+        for i in range(6)
+    ]
+    hexagon = gdspy.Polygon(points, layer=layer_number)
+    cell.add(hexagon)
+
+
+def draw_triangle(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
+    """Draws an equilateral triangle in the given cell."""
+    center_x = x_px * size_of_cell
+    center_y = -y_px * size_of_cell
+    height = np.sqrt(3) / 2 * side_length
+    points = [
+        (center_x, center_y + 2 * height / 3),
+        (center_x - side_length / 2, center_y - height / 3),
+        (center_x + side_length / 2, center_y - height / 3),
+    ]
+    triangle = gdspy.Polygon(points, layer=layer_number)
+    cell.add(triangle)
+
+
 def process_image(filepath):
     """Processes the image, asking the user to choose shape type, and generates the GDS file."""
 
@@ -40,8 +80,12 @@ def process_image(filepath):
     r_min = int(input("R min value: "))
     r_max = int(input("R max value: "))
 
-    question = int(input("Circle / Square [ 0 / 1 ]: "))
-    question2 = int(input("Zakres 0-254 / 1-255 [0/1]: "))
+    question = int(input("Circle / Triangle / Square / Pentagon / Hexagon [ 0 / 1 / 2 / 3 / 4]: "))
+    question2 = input('Enter pixels you exclude separated by space: \n')
+    excluded_list = question2.split()
+
+    for i in range(len(excluded_list)):
+        excluded_list[i] = int(excluded_list[i])
 
     total_pixels = len(np_data) * len(np_data[0])
 
@@ -52,31 +96,47 @@ def process_image(filepath):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
+                    if pixel in excluded_list:
+                        pbar.update(1)
+                        continue
+
                     area_min = np.pi * (r_min ** 2)
                     area_max = np.pi * (r_max ** 2)
 
-                    if question2 == 0:
-                        if pixel >= 0:
-                            area = area_min + (pixel-1 / 254) * (area_max - area_min)
-                            r_new = np.sqrt(area / np.pi)
-                        else:
-                            r_new = 0
-
-                        if r_new > 0:
-                            draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
+                    if pixel >= 0:
+                        area = area_min + (pixel / 255) * (area_max - area_min)
+                        r_new = np.sqrt(area / np.pi)
                     else:
-                        if pixel > 1:
-                            area = area_min + (pixel/ 255) * (area_max - area_min)
-                            r_new = np.sqrt(area / np.pi)
-                        else:
-                            r_new = 0
+                        r_new = 0
 
-                        if r_new > 0:
-                            draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
+                    if r_new > 0:
+                        draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
 
                     pbar.update(1)
+    elif question == 1:  # Triangle
 
-    elif question == 1:  # Square
+        print("Drawing triangles...")
+        side_min = r_min
+        side_max = r_max
+
+        if side_min < 1:
+            side_min = 1
+
+        with tqdm(total=total_pixels, desc="Drawing Triangles", ncols=80) as pbar:
+            for i in range(len(np_data)):
+                for j in range(len(np_data[i])):
+                    pixel = np_data[i][j]
+
+                    if pixel in excluded_list:
+                        pbar.update(1)
+                        continue
+
+                    if pixel >= 0:
+                        side_length = side_min + (pixel / 255) * (side_max - side_min)
+                        draw_triangle(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+                        pbar.update(1)
+
+    elif question == 2:  # Square
 
         print("Drawing squares...")
         side_min = r_min
@@ -88,20 +148,60 @@ def process_image(filepath):
         with tqdm(total=total_pixels, desc="Drawing Squares", ncols=80) as pbar:
             for i in range(len(np_data)):
                 for j in range(len(np_data[i])):
+                    pixel = np_data[i][j]
 
-                    if question2 == 0:
-                        pixel = np_data[i][j]
-                        side_length = side_min + (pixel-1 / 254) * (side_max - side_min)
-                        draw_square(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+                    if pixel in excluded_list:
+                        pbar.update(1)
+                        continue
 
-                    elif question2 == 1:
-
-                        pixel = np_data[i][j]
+                    if pixel >= 0:
                         side_length = side_min + (pixel / 255) * (side_max - side_min)
                         draw_square(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+                        pbar.update(1)
 
-                    pbar.update(1)
+    elif question == 3:  # Pentagon
+        print("Drawing pentagons...")
+        side_min = r_min
+        side_max = r_max
 
+        if side_min < 1:
+            side_min = 1
+
+        with tqdm(total=total_pixels, desc="Drawing Pentagons", ncols=80) as pbar:
+            for i in range(len(np_data)):
+                for j in range(len(np_data[i])):
+                    pixel = np_data[i][j]
+
+                    if pixel in excluded_list:
+                        pbar.update(1)
+                        continue
+
+                    if pixel >= 0:
+                        side_length = side_min + (pixel / 255) * (side_max - side_min)
+                        draw_pentagon(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+                        pbar.update(1)
+
+    elif question == 4:  # Hexagon
+        print("Drawing hexagons...")
+        side_min = r_min
+        side_max = r_max
+
+        if side_min < 1:
+            side_min = 1
+
+        with tqdm(total=total_pixels, desc="Drawing Hexagons", ncols=80) as pbar:
+            for i in range(len(np_data)):
+                for j in range(len(np_data[i])):
+                    pixel = np_data[i][j]
+
+                    if pixel in excluded_list:
+                        pbar.update(1)
+                        continue
+
+                    if pixel >= 0:
+                        side_length = side_min + (pixel / 255) * (side_max - side_min)
+                        draw_hexagon(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+                        pbar.update(1)
     else:
         print("Invalid input. Exiting.")
         return
