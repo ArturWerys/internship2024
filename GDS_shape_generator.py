@@ -1,10 +1,9 @@
 import gdspy
 from PIL import Image
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
 import numpy as np
 import time
 from tqdm import tqdm
+import argparse
 
 
 def draw_circle(cell, radius=1, size_of_cell=2, layer_number=1, x_px=0, y_px=0):
@@ -65,6 +64,7 @@ def draw_triangle(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y
     triangle = gdspy.Polygon(points, layer=layer_number)
     cell.add(triangle)
 
+
 def draw_star(cell, inner_radius=100, outer_radius=500, size_of_cell=1000, arms=7, offset_angle=0, layer_number=1, x_px=0, y_px=0):
     """Draws an equilateral triangle in the given cell."""
     center_x = x_px * size_of_cell
@@ -77,7 +77,7 @@ def draw_star(cell, inner_radius=100, outer_radius=500, size_of_cell=1000, arms=
     cell.add(star)
 
 
-def process_image(filepath):
+def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
     """Processes the image, asking the user to choose shape type, and generates the GDS file."""
 
     image = Image.open(filepath)
@@ -87,27 +87,20 @@ def process_image(filepath):
     print(f"Loaded image: {filepath}")
     np_data = np.asarray(image)
 
-    size_of_cell = int(input("Size of cell: "))
-    r_min = int(input("R min value: "))
-    r_max = int(input("R max value: "))
-
-    question = int(input("Circle / Triangle / Square / Pentagon / Hexagon / Star [ 0 / 1 / 2 / 3 / 4 / 5]: "))
-    question2 = input('Enter pixels you exclude separated by space: \n')
-    excluded_list = question2.split()
-
-    for i in range(len(excluded_list)):
-        excluded_list[i] = int(excluded_list[i])
-
     total_pixels = len(np_data) * len(np_data[0])
 
-    if question == 0:  # Circle
+    # Konwersja na liczbę
+    excluded = set(map(int, excluded))
+
+
+    if shape == 0:  # Circle
 
         with tqdm(total=total_pixels, desc="Drawing Circles", ncols=80) as pbar:
             for i in range(len(np_data)):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
-                    if pixel in excluded_list:
+                    if pixel in excluded:
                         pbar.update(1)
                         continue
 
@@ -124,7 +117,7 @@ def process_image(filepath):
                         draw_circle(cell, r_new, size_of_cell, layer_number=1, x_px=i, y_px=j)
 
                     pbar.update(1)
-    elif question == 1:  # Triangle
+    elif shape == 1:  # Triangle
 
         print("Drawing triangles...")
         side_min = r_min
@@ -138,7 +131,7 @@ def process_image(filepath):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
-                    if pixel in excluded_list:
+                    if pixel in excluded:
                         pbar.update(1)
                         continue
 
@@ -147,7 +140,7 @@ def process_image(filepath):
                         draw_triangle(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
                         pbar.update(1)
 
-    elif question == 2:  # Square
+    elif shape == 2:  # Square
 
         print("Drawing squares...")
         side_min = r_min
@@ -161,7 +154,7 @@ def process_image(filepath):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
-                    if pixel in excluded_list:
+                    if pixel in excluded:
                         pbar.update(1)
                         continue
 
@@ -170,7 +163,7 @@ def process_image(filepath):
                         draw_square(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
                         pbar.update(1)
 
-    elif question == 3:  # Pentagon
+    elif shape == 3:  # Pentagon
         print("Drawing pentagons...")
         side_min = r_min
         side_max = r_max
@@ -183,7 +176,7 @@ def process_image(filepath):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
-                    if pixel in excluded_list:
+                    if pixel in excluded:
                         pbar.update(1)
                         continue
 
@@ -192,7 +185,7 @@ def process_image(filepath):
                         draw_pentagon(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
                         pbar.update(1)
 
-    elif question == 4:  # Hexagon
+    elif shape == 4:  # Hexagon
         print("Drawing hexagons...")
         side_min = r_min
         side_max = r_max
@@ -205,7 +198,7 @@ def process_image(filepath):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
-                    if pixel in excluded_list:
+                    if pixel in excluded:
                         pbar.update(1)
                         continue
 
@@ -214,13 +207,13 @@ def process_image(filepath):
                         draw_hexagon(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
                         pbar.update(1)
 
-    elif question == 5:  # Star
+    elif shape == 5:  # Star
         with tqdm(total=total_pixels, desc="Drawing Stars", ncols=80) as pbar:
             for i in range(len(np_data)):
                 for j in range(len(np_data[i])):
                     pixel = np_data[i][j]
 
-                    if pixel in excluded_list:
+                    if pixel in excluded:
                         pbar.update(1)
                         continue
 
@@ -243,16 +236,27 @@ def process_image(filepath):
 
     lib.write_gds("image.gds")
     print("GDS file created: image.gds")
+    print(excluded)
 
 
 def main():
-    Tk().withdraw()
-    filepath = askopenfilename(title="Wybierz plik obrazu", filetypes=[("Image files", "*.png;*.jpg;*.jpeg;*.bmp;*.gif")])
-    if filepath:
-        process_image(filepath)
-    else:
-        print("No file selected.")
-    print("Zespół najlepszych praktykantów Werys/Głażewski sp. z o.o. życzą miłego dnia! :)")
+    """Parsowanie argumentów z terminala i uruchomienie przetwarzania obrazu."""
+
+    parser = argparse.ArgumentParser(description="Processes an image and generates a GDS file.")
+
+    parser.add_argument("filepath", type=str, help="Path to the image file")
+    parser.add_argument("size_of_cell", type=int, help="Size of cell")
+    parser.add_argument("r_min", type=int, help="Minimum radius/side length")
+    parser.add_argument("r_max", type=int, help="Maximum radius/side length")
+    parser.add_argument("shape", type=int, choices=range(6),
+                        help="Shape: 0=Circle, 1=Triangle, 2=Square, 3=Pentagon, 4=Hexagon, 5=Star")
+    parser.add_argument("excluded", nargs='*', help="Pixels to exclude (separated by spaces)")
+
+    args = parser.parse_args()
+
+    process_image(args.filepath, args.size_of_cell, args.r_min, args.r_max, args.shape, args.excluded)
+
+    print("Zespół najlepszych praktykantów Werys/Głażewski sp. z o.o. życzy miłego dnia! :)")
 
 
 if __name__ == "__main__":
