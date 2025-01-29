@@ -65,6 +65,17 @@ def draw_triangle(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y
     triangle = gdspy.Polygon(points, layer=layer_number)
     cell.add(triangle)
 
+def draw_star(cell, inner_radius=100, outer_radius=500, size_of_cell=1000, arms=7, offset_angle=0, layer_number=1, x_px=0, y_px=0):
+    """Draws an equilateral triangle in the given cell."""
+    center_x = x_px * size_of_cell
+    center_y = -y_px * size_of_cell
+    points = []
+    for arm in range(0,arms*2,2):
+        points.append((center_x + outer_radius*np.cos(np.deg2rad(360/arms/2*arm+offset_angle)), center_y + outer_radius*np.sin(np.deg2rad(360/arms/2*arm+offset_angle))))
+        points.append((center_x + inner_radius*np.cos(np.deg2rad(360/arms/2*(arm+1)+offset_angle)), center_y + inner_radius*np.sin(np.deg2rad(360/arms/2*(arm+1)+offset_angle))))
+    star = gdspy.Polygon(points, layer=layer_number)
+    cell.add(star)
+
 
 def process_image(filepath):
     """Processes the image, asking the user to choose shape type, and generates the GDS file."""
@@ -80,7 +91,7 @@ def process_image(filepath):
     r_min = int(input("R min value: "))
     r_max = int(input("R max value: "))
 
-    question = int(input("Circle / Triangle / Square / Pentagon / Hexagon [ 0 / 1 / 2 / 3 / 4]: "))
+    question = int(input("Circle / Triangle / Square / Pentagon / Hexagon / Star [ 0 / 1 / 2 / 3 / 4 / 5]: "))
     question2 = input('Enter pixels you exclude separated by space: \n')
     excluded_list = question2.split()
 
@@ -202,6 +213,30 @@ def process_image(filepath):
                         side_length = side_min + (pixel / 255) * (side_max - side_min)
                         draw_hexagon(cell, side_length, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
                         pbar.update(1)
+
+    elif question == 5:  # Star
+        with tqdm(total=total_pixels, desc="Drawing Stars", ncols=80) as pbar:
+            for i in range(len(np_data)):
+                for j in range(len(np_data[i])):
+                    pixel = np_data[i][j]
+
+                    if pixel in excluded_list:
+                        pbar.update(1)
+                        continue
+
+                    area_min = np.pi * (r_min ** 2)
+                    area_max = np.pi * (r_max ** 2)
+
+                    if pixel >= 0:
+                        area = area_min + (pixel / 255) * (area_max - area_min)
+                        r_new = np.sqrt(area / np.pi)
+                    else:
+                        r_new = 0
+
+                    if r_new > 0:
+                        draw_star(cell, inner_radius=r_new, size_of_cell=size_of_cell, layer_number=1, x_px=i, y_px=j)
+                    pbar.update(1)
+    
     else:
         print("Invalid input. Exiting.")
         return
