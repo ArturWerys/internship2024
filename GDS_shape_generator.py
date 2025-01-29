@@ -66,7 +66,7 @@ def draw_triangle(cell, side_length=1, size_of_cell=2, layer_number=1, x_px=0, y
 
 
 def draw_star(cell, inner_radius=100, outer_radius=500, size_of_cell=1000, arms=7, offset_angle=0, layer_number=1, x_px=0, y_px=0):
-    """Draws an equilateral triangle in the given cell."""
+    """Draws a star in the given cell."""
     center_x = x_px * size_of_cell
     center_y = -y_px * size_of_cell
     points = []
@@ -78,7 +78,7 @@ def draw_star(cell, inner_radius=100, outer_radius=500, size_of_cell=1000, arms=
 
 
 def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
-    """Processes the image, asking the user to choose shape type, and generates the GDS file."""
+    """Processes the image and generates the GDS file."""
 
     image = Image.open(filepath)
     lib = gdspy.GdsLibrary(unit=1e-9)
@@ -91,7 +91,6 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
 
     # Konwersja na liczbę
     excluded = set(map(int, excluded))
-
 
     if shape == 0:  # Circle
 
@@ -119,7 +118,6 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
                     pbar.update(1)
     elif shape == 1:  # Triangle
 
-        print("Drawing triangles...")
         side_min = r_min
         side_max = r_max
 
@@ -142,7 +140,6 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
 
     elif shape == 2:  # Square
 
-        print("Drawing squares...")
         side_min = r_min
         side_max = r_max
 
@@ -164,7 +161,7 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
                         pbar.update(1)
 
     elif shape == 3:  # Pentagon
-        print("Drawing pentagons...")
+
         side_min = r_min
         side_max = r_max
 
@@ -186,7 +183,7 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
                         pbar.update(1)
 
     elif shape == 4:  # Hexagon
-        print("Drawing hexagons...")
+
         side_min = r_min
         side_max = r_max
 
@@ -236,12 +233,10 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
 
     lib.write_gds("image.gds")
     print("GDS file created: image.gds")
-    print(excluded)
 
 
 def main():
-    """Parsowanie argumentów z terminala i uruchomienie przetwarzania obrazu."""
-
+    """Parsing arguments from the terminal and starting image processing."""
     parser = argparse.ArgumentParser(description="Processes an image and generates a GDS file.")
 
     parser.add_argument("filepath", type=str, help="Path to the image file")
