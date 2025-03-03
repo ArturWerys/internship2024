@@ -77,12 +77,12 @@ def draw_star(cell, inner_radius=100, outer_radius=500, size_of_cell=1000, arms=
     cell.add(star)
 
 
-def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
+def process_image(filepath, filename, size_of_cell, r_min, r_max, shape, excluded):
     """Processes the image and generates the GDS file."""
 
     image = Image.open(filepath)
     lib = gdspy.GdsLibrary(unit=1e-9)
-    cell = lib.new_cell(f"Cell_{int(time.time())}")
+    cell = lib.new_cell(f"Cell_{int(1000 * time.time())}")
 
     print(f"Loaded image: {filepath}")
     np_data = np.asarray(image)
@@ -231,8 +231,8 @@ def process_image(filepath, size_of_cell, r_min, r_max, shape, excluded):
         print("Invalid input. Exiting.")
         return
 
-    lib.write_gds("image.gds")
-    print("GDS file created: image.gds")
+    lib.write_gds(filename)
+    print("GDS file created :" + filename)
 
 
 def main():
@@ -240,6 +240,7 @@ def main():
     parser = argparse.ArgumentParser(description="Processes an image and generates a GDS file.")
 
     parser.add_argument("filepath", type=str, help="Path to the image file")
+    parser.add_argument("file", type=str, help="GDS file name")
     parser.add_argument("size_of_cell", type=int, help="Size of cell")
     parser.add_argument("r_min", type=int, help="Minimum radius/side length")
     parser.add_argument("r_max", type=int, help="Maximum radius/side length")
@@ -249,7 +250,7 @@ def main():
 
     args = parser.parse_args()
 
-    process_image(args.filepath, args.size_of_cell, args.r_min, args.r_max, args.shape, args.excluded)
+    process_image(args.filepath, args.file, args.size_of_cell, args.r_min, args.r_max, args.shape, args.excluded)
 
     print("Zespół najlepszych praktykantów Werys/Głażewski sp. z o.o. życzy miłego dnia! :)")
 

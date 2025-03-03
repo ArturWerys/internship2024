@@ -1,4 +1,3 @@
-
 generateOpticalSurface.asv
 generateOpticalSurface.asv
 image.gds
@@ -7,3 +6,10 @@ image_2.log
 image_1.log
 generateOpticalSurface.asv
 image.gds
+pow_1.gds
+pow_1_neg.gds
+lens1.png
+lens1_neg.png
+Dif_Grat_0_7_20.gds
+Dif_Grat_2_7.gds
+Dif_Grat_3_8.gds

@@ -6,7 +6,6 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
     %   a               - aperture
     %   d               - thickness
     %   px_s            - pixel size
-    %   shape           - round or square (0 or 1)
     %   coeffs_array    - asphericity coefficient table []
     % OUTPUT:
     %   optical_surface - A grayscale image of the optical surface structure.
@@ -90,7 +89,7 @@ function optical_surface = generateOpticalSurface(f, K, a, d, px_s, varargin)
 
     % Grey structure map
     optical_surface = mat2gray(F_sum);
-    imwrite(optical_surface, 'surface_3D.png');
+    imwrite(optical_surface, 'lens1.png');
    
     % Illustrative charts
     figure;
