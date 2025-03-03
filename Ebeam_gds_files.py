@@ -3,12 +3,12 @@ import time
 from Diffraction_Grating import generate_gds_file as gds
 
 # Pierwsza soczewka
-pimg("filepath", "pow_1.gds", 1600, 400, 800, 2, [])
+pimg("lens1.png", "pow_1.gds", 1600, 400, 800, 2, [])
 time.sleep(1)
 # r min > 200
 
 # Druga soczewka
-pimg("filepath", "pow_1_neg.gds", 1600, 400, 800, 3, [])
+pimg("lens1_neg.png", "pow_1_neg.gds", 1600, 400, 800, 3, [])
 time.sleep(1)
 
 # Generacja siatek dyfrakcyjnych
